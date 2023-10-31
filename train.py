@@ -44,6 +44,7 @@ class TrainPipeline():
         self.game_batch_num = 1000
         self.best_win_ratio = 0.0
         self.selfplay_noise = 0.25
+        self.noise_temp = 0.3  # big temp => uniform
         self.policy_loss_ratio = 0.5
         self.use_gpu = False
         # num of simulations used for the pure mcts, which is used as
@@ -66,7 +67,8 @@ class TrainPipeline():
                                       c_puct=self.c_puct,
                                       n_playout=self.n_playout,
                                       is_selfplay=1,
-                                      selfplay_noise=self.selfplay_noise)
+                                      selfplay_noise=self.selfplay_noise,
+                                      noise_temp=self.noise_temp)
 
     def get_equi_data(self, play_data):
         """augment the data set by rotation and flipping
