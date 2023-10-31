@@ -21,9 +21,9 @@ from policy_value_net_pytorch import PolicyValueNet  # Pytorch
 class TrainPipeline():
     def __init__(self, init_model=None):
         # params of the board and the game
-        self.board_width = 6
-        self.board_height = 6
-        self.n_in_row = 4
+        self.board_width = 9
+        self.board_height = 9
+        self.n_in_row = 5
         self.board = Board(width=self.board_width,
                            height=self.board_height,
                            n_in_row=self.n_in_row)
@@ -41,7 +41,7 @@ class TrainPipeline():
         self.epochs = 5  # num of train_steps for each update
         self.kl_targ = 0.02
         self.check_freq = 50
-        self.game_batch_num = 1500
+        self.game_batch_num = 1000
         self.best_win_ratio = 0.0
         self.selfplay_noise = 0.25
         self.policy_loss_ratio = 0.5
@@ -191,7 +191,7 @@ class TrainPipeline():
                         # update the best_policy
                         self.policy_value_net.save_model('./best_policy.model')
                         if (self.best_win_ratio == 1.0 and
-                                self.pure_mcts_playout_num < 5000):
+                                self.pure_mcts_playout_num < 10000):
                             self.pure_mcts_playout_num += 1000
                             self.best_win_ratio = 0.0
         except KeyboardInterrupt:
