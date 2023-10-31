@@ -43,6 +43,9 @@ class TrainPipeline():
         self.check_freq = 50
         self.game_batch_num = 1500
         self.best_win_ratio = 0.0
+        self.selfplay_noise = 0.25
+        self.policy_loss_ratio = 0.5
+        self.use_gpu = False
         # num of simulations used for the pure mcts, which is used as
         # the opponent to evaluate the trained policy
         self.pure_mcts_playout_num = 1000
@@ -51,16 +54,19 @@ class TrainPipeline():
             self.policy_value_net = PolicyValueNet(self.board_width,
                                                    self.board_height,
                                                    model_file=init_model,
-                                                   use_gpu=False)
+                                                   use_gpu=self.use_gpu,
+                                                   policy_loss_ratio=self.policy_loss_ratio)
         else:
             # start training from a new policy-value net
             self.policy_value_net = PolicyValueNet(self.board_width,
                                                    self.board_height,
-                                                   use_gpu=False)
+                                                   use_gpu=self.use_gpu,
+                                                   policy_loss_ratio=self.policy_loss_ratio)
         self.mcts_player = MCTSPlayer(self.policy_value_net.policy_value_fn,
                                       c_puct=self.c_puct,
                                       n_playout=self.n_playout,
-                                      is_selfplay=1)
+                                      is_selfplay=1,
+                                      selfplay_noise=self.selfplay_noise)
 
     def get_equi_data(self, play_data):
         """augment the data set by rotation and flipping

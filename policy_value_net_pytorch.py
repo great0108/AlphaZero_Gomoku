@@ -60,10 +60,11 @@ class Net(nn.Module):
 class PolicyValueNet():
     """policy-value network """
     def __init__(self, board_width, board_height,
-                 model_file=None, use_gpu=False):
+                 model_file=None, use_gpu=False, policy_loss_ratio=0.5):
         self.use_gpu = use_gpu
         self.board_width = board_width
         self.board_height = board_height
+        self.policy_loss_ratio = policy_loss_ratio
         self.l2_const = 1e-4  # coef of l2 penalty
         # the policy value net module
         if self.use_gpu:
@@ -137,7 +138,7 @@ class PolicyValueNet():
         # Note: the L2 penalty is incorporated in optimizer
         value_loss = F.mse_loss(value.view(-1), winner_batch)
         policy_loss = -torch.mean(torch.sum(mcts_probs*log_act_probs, 1))
-        loss = value_loss + policy_loss
+        loss = (value_loss * (1-self.policy_loss_ratio) + policy_loss * self.policy_loss_ratio) * 2
         # backward and optimize
         loss.backward()
         self.optimizer.step()
