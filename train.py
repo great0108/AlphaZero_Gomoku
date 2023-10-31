@@ -5,7 +5,10 @@ An implementation of the training pipeline of AlphaZero for Gomoku
 @author: Junxiao Song
 """
 
-from __future__ import print_function
+from cProfile import Profile
+from pstats import Stats
+
+# from __future__ import print_function
 import random
 import numpy as np
 from collections import defaultdict, deque
@@ -41,14 +44,16 @@ class TrainPipeline():
         self.epochs = 5  # num of train_steps for each update
         self.kl_targ = 0.02
         self.check_freq = 50
-        self.game_batch_num = 1000
+        self.game_batch_num = 30
         self.best_win_ratio = 0.0
         self.selfplay_noise = 0.25
+        self.noise_temp = 0.3  # big temp => uniform
         self.policy_loss_ratio = 0.5
         self.use_gpu = False
         # num of simulations used for the pure mcts, which is used as
         # the opponent to evaluate the trained policy
         self.pure_mcts_playout_num = 1000
+
         if init_model:
             # start training from an initial policy-value net
             self.policy_value_net = PolicyValueNet(self.board_width,
@@ -66,7 +71,8 @@ class TrainPipeline():
                                       c_puct=self.c_puct,
                                       n_playout=self.n_playout,
                                       is_selfplay=1,
-                                      selfplay_noise=self.selfplay_noise)
+                                      selfplay_noise=self.selfplay_noise,
+                                      noise_temp=self.noise_temp)
 
     def get_equi_data(self, play_data):
         """augment the data set by rotation and flipping
@@ -200,4 +206,12 @@ class TrainPipeline():
 
 if __name__ == '__main__':
     training_pipeline = TrainPipeline()
-    training_pipeline.run()
+    test = lambda: training_pipeline.run()
+
+    profiler = Profile()
+    profiler.runcall(test)
+    stats = Stats(profiler)
+    stats.strip_dirs()
+    stats.sort_stats('tottime')
+    stats.print_stats()
+    # training_pipeline.run()

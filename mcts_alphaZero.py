@@ -45,8 +45,17 @@ class TreeNode(object):
         plus bonus u(P).
         Return: A tuple of (action, next_node)
         """
-        return max(self._children.items(),
-                   key=lambda act_node: act_node[1].get_value(c_puct))
+
+        items = self._children.items()
+        children = np.array(list(map(lambda node: [node[1]._P, node[1]._n_visits, node[1]._Q], items)))
+
+        value = (c_puct * children[:, 0] * np.sqrt(self._n_visits) / (1 + children[:, 1])) + children[:, 2]
+        # children = map(lambda node: node.get_value(c_puct), self._children.values())
+        idx = np.argmax(value)
+        return list(items)[idx]
+        
+        # return max(self._children.items(),
+        #            key=lambda act_node: act_node[1].get_value(c_puct))
 
     def update(self, leaf_value):
         """Update node values from leaf evaluation.
@@ -172,10 +181,11 @@ class MCTSPlayer(object):
     """AI player based on MCTS"""
 
     def __init__(self, policy_value_function,
-                 c_puct=5, n_playout=2000, is_selfplay=0, selfplay_noise=0.25):
+                 c_puct=5, n_playout=2000, is_selfplay=0, selfplay_noise=0.25, noise_temp=0.3):
         self.mcts = MCTS(policy_value_function, c_puct, n_playout)
         self._is_selfplay = is_selfplay
         self.selfplay_noise = selfplay_noise
+        self.noise_temp = noise_temp
 
     def set_player_ind(self, p):
         self.player = p
@@ -195,7 +205,7 @@ class MCTSPlayer(object):
                 # self-play training)
                 move = np.random.choice(
                     acts,
-                    p=(1-self.selfplay_noise)*probs + self.selfplay_noise*np.random.dirichlet(0.3*np.ones(len(probs)))
+                    p=(1-self.selfplay_noise)*probs + self.selfplay_noise*np.random.dirichlet(self.noise_temp*np.ones(len(probs)))
                 )
                 # update the root node and reuse the search tree
                 self.mcts.update_with_move(move)
