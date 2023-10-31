@@ -209,7 +209,7 @@ if __name__ == '__main__':
     training_pipeline.run()
 
     # profiler = Profile()
-    # profiler.runcall(test)
+    # profiler.runcall(training_pipeline.run())
     # stats = Stats(profiler)
     # stats.strip_dirs()
     # stats.sort_stats('tottime')

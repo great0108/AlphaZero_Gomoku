@@ -52,7 +52,7 @@ class TreeNode(object):
         value = (c_puct * children[:, 0] * np.sqrt(self._n_visits) / (1 + children[:, 1])) + children[:, 2]
         # children = map(lambda node: node.get_value(c_puct), self._children.values())
         idx = np.argmax(value)
-        return list(items)[idx]
+        return list()[idx]
         
         # return max(self._children.items(),
         #            key=lambda act_node: act_node[1].get_value(c_puct))
@@ -72,7 +72,7 @@ class TreeNode(object):
         """
         # If it is not root, this node's parent should be updated first.
         if self._parent:
-            self._parent.update_recursive(leaf_value)
+            self._parent.update_recursive(-leaf_value)
         self.update(leaf_value)
 
     def get_value(self, c_puct):
