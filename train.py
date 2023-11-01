@@ -43,7 +43,7 @@ class TrainPipeline():
         self.play_batch_size = 1
         self.epochs = 5  # num of train_steps for each update
         self.kl_targ = 0.02
-        self.check_freq = 50
+        self.check_freq = 100
         self.game_batch_num = 1000
         self.best_win_ratio = 0.0
         self.selfplay_noise = 0.25
@@ -52,7 +52,7 @@ class TrainPipeline():
         self.use_gpu = False
         # num of simulations used for the pure mcts, which is used as
         # the opponent to evaluate the trained policy
-        self.pure_mcts_playout_num = 1000
+        self.pure_mcts_playout_num = 3000
 
         if init_model:
             # start training from an initial policy-value net
@@ -206,12 +206,13 @@ class TrainPipeline():
 
 if __name__ == '__main__':
     training_pipeline = TrainPipeline("./best_policy99.model")
-    training_pipeline.run()
-
-    # profiler = Profile()
-    # profiler.runcall(test)
-    # stats = Stats(profiler)
-    # stats.strip_dirs()
-    # stats.sort_stats('tottime')
-    # stats.print_stats()
     # training_pipeline.run()
+
+    profiler = Profile()
+    test = lambda: training_pipeline.run()
+    profiler.runcall(test)
+    stats = Stats(profiler)
+    stats.strip_dirs()
+    stats.sort_stats('tottime')
+    stats.print_stats()
+

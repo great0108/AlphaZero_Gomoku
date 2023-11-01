@@ -57,7 +57,7 @@ class TreeNode(object):
         children = np.array(list(map(lambda node: [node[1]._P, node[1]._n_visits, node[1]._Q], items)))
 
         value = (c_puct * children[:, 0] * np.sqrt(self._n_visits) / (1 + children[:, 1])) + children[:, 2]
-        # children = map(lambda node: node.get_value(c_puct), self._children.values())
+
         idx = np.argmax(value)
         return list(items)[idx]
     
@@ -79,7 +79,7 @@ class TreeNode(object):
         """
         # If it is not root, this node's parent should be updated first.
         if self._parent:
-            self._parent.update_recursive(leaf_value)
+            self._parent.update_recursive(-leaf_value)
         self.update(leaf_value)
 
     def get_value(self, c_puct):
@@ -156,6 +156,7 @@ class MCTS(object):
                 break
             action_probs = rollout_policy_fn(state)
             max_action = max(action_probs, key=itemgetter(1))[0]
+            # random_action = np.random.choice(state.avaliables)
             state.do_move(max_action)
         else:
             # If no break from the loop, issue a warning.

@@ -89,32 +89,75 @@ class Board(object):
         states = self.states
         n = self.n_in_row
 
-        moved = list(set(range(width * height)) - set(self.availables))
+        moved = np.array(list(set(range(width * height)) - set(self.availables)))
         if len(moved) < self.n_in_row *2-1:
             return False, -1
 
-        for m in moved:
-            h = m // width
-            w = m % width
-            player = states[m]
+        moves, players = np.array(list(zip(*states.items())))
+        states = np.zeros(width * height)
+        states[moves] = players
 
-            if (w in range(width - n + 1) and
-                    len(set(states.get(i, -1) for i in range(m, m + n))) == 1):
-                return True, player
+        h = moved // width
+        w = moved % width
+        
+        # temp = moved[w < width - n + 1]
+        # result = [len(set(states[i:i+n])) for i in temp]
+        # if 1 in result:
+        #     idx = temp[result.index(1)]
+        #     return True, states[idx]
 
-            if (h in range(height - n + 1) and
-                    len(set(states.get(i, -1) for i in range(m, m + n * width, width))) == 1):
-                return True, player
+        temp1 = moved[w < width - n + 1]
+        idx1 = temp1.reshape(-1, 1) + np.arange(n)
 
-            if (w in range(width - n + 1) and h in range(height - n + 1) and
-                    len(set(states.get(i, -1) for i in range(m, m + n * (width + 1), width + 1))) == 1):
-                return True, player
+        temp2 = moved[h < height - n + 1]
+        idx2 = temp2.reshape(-1, 1) + np.arange(0, n * width, width)
 
-            if (w in range(n - 1, width) and h in range(height - n + 1) and
-                    len(set(states.get(i, -1) for i in range(m, m + n * (width - 1), width - 1))) == 1):
-                return True, player
+        temp3 = moved[(w < width - n + 1) & (h < height - n + 1)]
+        idx3 = temp3.reshape(-1, 1) + np.arange(0, n * (width + 1), width + 1)
+
+        temp4 = moved[(w > n - 2) & (h < height - n + 1)]
+        idx4 = temp4.reshape(-1, 1) + np.arange(0, n * (width - 1), width - 1)
+
+        temp = [temp1, temp2, temp3, temp4]
+        idx = np.concatenate([idx1, idx2, idx3, idx4])
+        result = np.take(states, idx)
+        result -= result[:, 0].reshape(-1, 1)
+        result = np.all(result == 0, axis=1).tolist()
+        if True in result:
+            idx = result.index(True)
+            for i in range(4):
+                if idx < len(temp[i]):
+                    return True, states[temp[i][idx]]
+                idx -= len(temp[i])
 
         return False, -1
+
+        # for m in moved:
+        #     h = m // width
+        #     w = m % width
+        #     player = states[m]
+
+        #     if (w < width - n + 1 and
+        #             len(set(states[m : m+n])) == 1):
+        #             # len(set(states.get(i, -1) for i in range(m, m + n))) == 1):
+        #         return True, player
+
+        #     if (h < height - n + 1 and
+        #             len(set(states[m : m + n * width : width])) == 1):
+        #             # len(set(states.get(i, -1) for i in range(m, m + n * width, width))) == 1):
+        #         return True, player
+
+        #     if (w < width - n + 1 and h < height - n + 1 and
+        #             len(set(states[m : m + n * (width + 1) : width + 1])) == 1):
+        #             # len(set(states.get(i, -1) for i in range(m, m + n * (width + 1), width + 1))) == 1):
+        #         return True, player
+
+        #     if (w > n - 2 and h < height - n + 1 and
+        #             len(set(states[m : m + n * (width - 1) : width - 1])) == 1):
+        #             # len(set(states.get(i, -1) for i in range(m, m + n * (width - 1), width - 1))) == 1):
+        #         return True, player
+
+        # return False, -1       
 
     def game_end(self):
         """Check whether the game is ended or not"""
