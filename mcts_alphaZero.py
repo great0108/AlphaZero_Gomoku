@@ -57,7 +57,7 @@ class TreeNode(object):
         value = (c_puct * children[:, 0] * np.sqrt(self._n_visits) / (1 + children[:, 1])) + children[:, 2]
 
         idx = np.argmax(value)
-        return list(items)[idx]
+        return list()[idx]
         
         # return max(self._children.items(),
         #            key=lambda act_node: act_node[1].get_value(c_puct))
