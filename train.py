@@ -206,13 +206,12 @@ class TrainPipeline():
 
 if __name__ == '__main__':
     training_pipeline = TrainPipeline("./best_policy99.model")
-    # training_pipeline.run()
+    training_pipeline.run()
 
-    profiler = Profile()
-    test = lambda: training_pipeline.run()
-    profiler.runcall(test)
-    stats = Stats(profiler)
-    stats.strip_dirs()
-    stats.sort_stats('tottime')
-    stats.print_stats()
-
+    # profiler = Profile()
+    # test = lambda: training_pipeline.run()
+    # profiler.runcall(test)
+    # stats = Stats(profiler)
+    # stats.strip_dirs()
+    # stats.sort_stats('tottime')
+    # stats.print_stats()

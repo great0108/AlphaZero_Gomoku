@@ -46,18 +46,11 @@ class TreeNode(object):
         Return: A tuple of (action, next_node)
         """
 
-        items = self._children.items()
-        children = np.zeros((len(items), 3))
-        i = 0
-        for item in items:
-            children[i] = (item[1]._P, item[1]._n_visits, item[1]._Q)
-            i += 1
-        # children = np.array(list(map(lambda node: [node[1]._P, node[1]._n_visits, node[1]._Q], items)))
-
+        items = list(self._children.items())
+        children = np.array([[node[1]._P, node[1]._n_visits, node[1]._Q] for node in items])
         value = (c_puct * children[:, 0] * np.sqrt(self._n_visits) / (1 + children[:, 1])) + children[:, 2]
-
         idx = np.argmax(value)
-        return list()[idx]
+        return items[idx]
         
         # return max(self._children.items(),
         #            key=lambda act_node: act_node[1].get_value(c_puct))
