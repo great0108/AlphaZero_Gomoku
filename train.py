@@ -32,7 +32,7 @@ class TrainPipeline():
                            n_in_row=self.n_in_row)
         self.game = Game(self.board)
         # training params
-        self.learn_rate = 2e-3
+        self.learn_rate = 1e-3
         self.lr_multiplier = 1.0  # adaptively adjust the learning rate based on KL
         self.temp = 1.0  # the temperature param
         self.n_playout = 400  # num of simulations for each move
@@ -42,9 +42,9 @@ class TrainPipeline():
         self.data_buffer = deque(maxlen=self.buffer_size)
         self.play_batch_size = 1
         self.epochs = 5  # num of train_steps for each update
-        self.kl_targ = 0.02
-        self.check_freq = 10
-        self.game_batch_num = 10
+        self.kl_targ = 0.01
+        self.check_freq = 100
+        self.game_batch_num = 1500
         self.best_win_ratio = 0.0
         self.selfplay_noise = 0.25
         self.noise_temp = 0.3  # big temp => uniform
