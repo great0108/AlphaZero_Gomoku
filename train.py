@@ -22,7 +22,7 @@ from policy_value_net_pytorch import PolicyValueNet  # Pytorch
 
 
 class TrainPipeline():
-    def __init__(self, init_model=None):
+    def __init__(self, init_model=None, base_model=None):
         # params of the board and the game
         self.board_width = 9
         self.board_height = 9
@@ -52,7 +52,8 @@ class TrainPipeline():
         self.use_gpu = False
         # num of simulations used for the pure mcts, which is used as
         # the opponent to evaluate the trained policy
-        self.pure_mcts_playout_num = 5000
+        self.pure_mcts_playout_num = 500
+        self.base_net = None
 
         if init_model:
             # start training from an initial policy-value net
@@ -67,6 +68,14 @@ class TrainPipeline():
                                                    self.board_height,
                                                    use_gpu=self.use_gpu,
                                                    policy_loss_ratio=self.policy_loss_ratio)
+            
+        if base_model:
+            self.base_net = PolicyValueNet(self.board_width,
+                                                   self.board_height,
+                                                   model_file=init_model,
+                                                   use_gpu=self.use_gpu,
+                                                   policy_loss_ratio=self.policy_loss_ratio)      
+
         self.mcts_player = MCTSPlayer(self.policy_value_net.policy_value_fn,
                                       c_puct=self.c_puct,
                                       n_playout=self.n_playout,
@@ -161,8 +170,14 @@ class TrainPipeline():
         current_mcts_player = MCTSPlayer(self.policy_value_net.policy_value_fn,
                                          c_puct=self.c_puct,
                                          n_playout=self.n_playout)
-        pure_mcts_player = MCTS_Pure(c_puct=5,
-                                     n_playout=self.pure_mcts_playout_num)
+        if self.base_net:
+            pure_mcts_player = MCTSPlayer(self.base_net.policy_value_fn,
+                                         c_puct=self.c_puct,
+                                         n_playout=self.n_playout)
+        else:
+            pure_mcts_player = MCTS_Pure(c_puct=5,
+                                         n_playout=self.pure_mcts_playout_num)
+        
         win_cnt = defaultdict(int)
         for i in range(n_games):
             winner = self.game.start_play(current_mcts_player,
@@ -205,13 +220,13 @@ class TrainPipeline():
 
 
 if __name__ == '__main__':
-    training_pipeline = TrainPipeline("./best_policy99.model")
-    training_pipeline.run()
+    training_pipeline = TrainPipeline("./best_policy99.model", "./base_policy99.model")
+    # training_pipeline.run()
 
-    # profiler = Profile()
-    # test = lambda: training_pipeline.run()
-    # profiler.runcall(test)
-    # stats = Stats(profiler)
-    # stats.strip_dirs()
-    # stats.sort_stats('tottime')
-    # stats.print_stats()
+    profiler = Profile()
+    test = lambda: training_pipeline.run()
+    profiler.runcall(test)
+    stats = Stats(profiler)
+    stats.strip_dirs()
+    stats.sort_stats('tottime')
+    stats.print_stats()

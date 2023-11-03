@@ -100,11 +100,11 @@ class Board(object):
         h = moved // width
         w = moved % width
         
-        # temp = moved[w < width - n + 1]
-        # result = [len(set(states[i:i+n])) for i in temp]
-        # if 1 in result:
-        #     idx = temp[result.index(1)]
-        #     return True, states[idx]
+        temp = moved[w < width - n + 1]
+        result = [len(set(states[i:i+n])) for i in temp]
+        if 1 in result:
+            idx = temp[result.index(1)]
+            return True, states[idx]
 
         temp1 = moved[w < width - n + 1]
         idx1 = temp1.reshape(-1, 1) + np.arange(n)
