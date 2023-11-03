@@ -46,13 +46,13 @@ class TrainPipeline():
         self.check_freq = 100
         self.game_batch_num = 1500
         self.best_win_ratio = 0.0
-        self.selfplay_noise = 0.25
-        self.noise_temp = 0.3  # big temp => uniform
+        self.selfplay_noise = 0.3
+        self.noise_temp = 0.4  # big temp => uniform
         self.policy_loss_ratio = 0.5
         self.use_gpu = False
         # num of simulations used for the pure mcts, which is used as
         # the opponent to evaluate the trained policy
-        self.pure_mcts_playout_num = 3000
+        self.pure_mcts_playout_num = 5000
 
         if init_model:
             # start training from an initial policy-value net
