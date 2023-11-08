@@ -83,7 +83,7 @@ class TrainPipeline():
                                       selfplay_noise=self.selfplay_noise,
                                       noise_temp=self.noise_temp)
 
-    def get_equi_data(self, play_data):
+    def get_equi_data(play_data):
         """augment the data set by rotation and flipping
         play_data: [(state, mcts_prob, winner_z), ..., ...]
         """
@@ -92,16 +92,16 @@ class TrainPipeline():
             for i in [1, 2, 3, 4]:
                 # rotate counterclockwise
                 equi_state = np.array([np.rot90(s, i) for s in state])
-                equi_mcts_prob = np.rot90(np.flipud(
-                    mcts_porb.reshape(self.board_height, self.board_width)), i)
+                equi_mcts_prob = np.rot90(
+                    mcts_porb.reshape(state.shape[1], state.shape[2]), i)
                 extend_data.append((equi_state,
-                                    np.flipud(equi_mcts_prob).flatten(),
+                                    equi_mcts_prob.flatten(),
                                     winner))
                 # flip horizontally
                 equi_state = np.array([np.fliplr(s) for s in equi_state])
                 equi_mcts_prob = np.fliplr(equi_mcts_prob)
                 extend_data.append((equi_state,
-                                    np.flipud(equi_mcts_prob).flatten(),
+                                    equi_mcts_prob.flatten(),
                                     winner))
         return extend_data
 

@@ -1,24 +1,34 @@
 import numpy as np
 
-# a = np.zeros((2,2))
-# a[0] = (1,2)
+def get_equi_data(play_data):
+        """augment the data set by rotation and flipping
+        play_data: [(state, mcts_prob, winner_z), ..., ...]
+        """
+        extend_data = []
+        for state, mcts_porb, winner in play_data:
+            for i in [1, 2, 3, 4]:
+                # rotate counterclockwise
+                equi_state = np.array([np.rot90(s, i) for s in state])
+                equi_mcts_prob = np.rot90(
+                    mcts_porb.reshape(state.shape[1], state.shape[2]), i)
+                extend_data.append((equi_state,
+                                    equi_mcts_prob.flatten(),
+                                    winner))
+                # flip horizontally
+                equi_state = np.array([np.fliplr(s) for s in equi_state])
+                equi_mcts_prob = np.fliplr(equi_mcts_prob)
+                extend_data.append((equi_state,
+                                    equi_mcts_prob.flatten(),
+                                    winner))
+        return extend_data
+
+state = np.arange(36).reshape(4,3,3)
+mcts_prob = np.arange(1, 10).reshape(1,9)
+winner = [1]
+data = [(state, mcts_prob, winner)]
+datas = get_equi_data(data)
+for a in datas:
+    print(a)
+
+# a = np.arange(9).reshape(3,3)
 # print(a)
-
-# import sys
-# input=sys.stdin.readline
-# L=[0.500, 0.333, 0.090]
-# a=len(L)
-# for count in range(1,1000) :
-#     possible=0
-#     for i in range(a) :
-#         if L[i]==0 :
-#             possible+=1
-#             continue
-#         if L[i]*count>=1 :
-#             if L[i]*count<=round(L[i]*count) and ((L[i]+0.0009)*count)>=round((L[i]+0.0009)*count) and round(L[i]*count)==round((L[i]+0.0009)*count) :
-#                 possible+=1
-#     if possible==a :
-#         print(count)
-#         break
-
-print(100 * "준")
