@@ -83,7 +83,7 @@ class TrainPipeline():
                                       selfplay_noise=self.selfplay_noise,
                                       noise_temp=self.noise_temp)
 
-    def get_equi_data(play_data):
+    def get_equi_data(self, play_data):
         """augment the data set by rotation and flipping
         play_data: [(state, mcts_prob, winner_z), ..., ...]
         """
