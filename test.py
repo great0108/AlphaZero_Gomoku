@@ -22,6 +22,7 @@ def get_equi_data(self, play_data):
                                     winner))
         return extend_data
 
+
 state = np.arange(36).reshape(4,3,3)
 mcts_prob = np.arange(1, 10).reshape(1,9)
 winner = [1]
