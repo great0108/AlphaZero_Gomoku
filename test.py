@@ -1,6 +1,6 @@
 import numpy as np
 
-def get_equi_data(play_data):
+def get_equi_data(self, play_data):
         """augment the data set by rotation and flipping
         play_data: [(state, mcts_prob, winner_z), ..., ...]
         """
@@ -25,7 +25,7 @@ def get_equi_data(play_data):
 state = np.arange(36).reshape(4,3,3)
 mcts_prob = np.arange(1, 10).reshape(1,9)
 winner = [1]
-data = [(state, mcts_prob, winner)]
+data = [(state, mcts_prob, winner), (state, mcts_prob, winner)]
 datas = get_equi_data(data)
 for a in datas:
     print(a)
