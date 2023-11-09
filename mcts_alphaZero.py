@@ -129,7 +129,7 @@ class MCTS(object):
         action_probs, leaf_value = self._policy(state)
         # Check for end of game.
         end, winner = state.game_end()
-        
+
         if not end:
             node.expand(action_probs)
         else:
@@ -193,7 +193,7 @@ class MCTSPlayer(object):
         self.mcts.update_with_move(-1)
 
     def get_action(self, board, temp=1e-3, return_prob=0):
-        sensible_moves = board.availables
+        sensible_moves = board.get_availables()
         # the pi vector returned by MCTS as in the alphaGo Zero paper
         move_probs = np.zeros(board.width*board.height)
         if len(sensible_moves) > 0:

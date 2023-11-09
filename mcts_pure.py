@@ -13,16 +13,16 @@ from operator import itemgetter
 def rollout_policy_fn(board):
     """a coarse, fast version of policy_fn used in the rollout phase."""
     # rollout randomly
-    action_probs = np.random.rand(len(board.availables))
-    return zip(board.availables, action_probs)
+    action_probs = np.random.rand(len(board.get_availables()))
+    return zip(board.get_availables(), action_probs)
 
 
 def policy_value_fn(board):
     """a function that takes in a state and outputs a list of (action, probability)
     tuples and a score for the state"""
     # return uniform probabilities and 0 score for pure MCTS
-    action_probs = np.ones(len(board.availables))/len(board.availables)
-    return zip(board.availables, action_probs), 0
+    action_probs = np.ones(len(board.get_availables()))/len(board.get_availables())
+    return zip(board.get_availables(), action_probs), 0
 
 
 class TreeNode(object):
@@ -204,7 +204,7 @@ class MCTSPlayer(object):
         self.mcts.update_with_move(-1)
 
     def get_action(self, board):
-        sensible_moves = board.availables
+        sensible_moves = board.get_availables()
         if len(sensible_moves) > 0:
             move = self.mcts.get_move(board)
             self.mcts.update_with_move(-1)

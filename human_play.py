@@ -37,7 +37,7 @@ class Human(object):
             move = board.location_to_move(location)
         except Exception as e:
             move = -1
-        if move == -1 or move not in board.availables:
+        if move == -1 or move not in board.get_availables():
             print("invalid move")
             move = self.get_action(board)
         return move
