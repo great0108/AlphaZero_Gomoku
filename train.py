@@ -44,7 +44,7 @@ class TrainPipeline():
         self.epochs = 5  # num of train_steps for each update
         self.kl_targ = 0.01
         self.check_freq = 100
-        self.game_batch_num = 2000
+        self.game_batch_num = 10
         self.best_win_ratio = 0.0
         self.selfplay_noise = 0.3
         self.noise_temp = 0.4  # big temp => uniform
@@ -221,12 +221,12 @@ class TrainPipeline():
 
 if __name__ == '__main__':
     training_pipeline = TrainPipeline()
-    training_pipeline.run()
+    # training_pipeline.run()
 
-    # profiler = Profile()
-    # test = lambda: training_pipeline.run()
-    # profiler.runcall(test)
-    # stats = Stats(profiler)
-    # stats.strip_dirs()
-    # stats.sort_stats('tottime')
-    # stats.print_stats()
+    profiler = Profile()
+    test = lambda: training_pipeline.run()
+    profiler.runcall(test)
+    stats = Stats(profiler)
+    stats.strip_dirs()
+    stats.sort_stats('tottime')
+    stats.print_stats()
