@@ -21,6 +21,7 @@ class Board(object):
         # need how many pieces in a row to win
         self.n_in_row = int(kwargs.get('n_in_row', 5))
         self.players = [1, 2]  # player1 and player2
+        self.renju = False
 
     def init_board(self, start_player=0):
         if self.width < self.n_in_row or self.height < self.n_in_row:
@@ -178,26 +179,29 @@ class Board(object):
         return self.current_player
     
     def get_availables(self):
-        if self.order == 0:
-            if self.change == True:
-                if len(self.states) > 1:
-                    square_state = np.zeros((self.width, self.height))
-                    moves, players = np.array(list(zip(*self.states.items())))
-                    move_curr = moves[players == self.current_player]
-                    move_oppo = moves[players != self.current_player]
-                    square_state[move_curr // self.width,
-                                    move_curr % self.height] = 1
-                    square_state[move_oppo // self.width,
-                                    move_oppo % self.height] = 2
-                    rule = Renju_Rule(square_state, self.width)
-                    forbid = rule.get_forbidden_points(1)
-                    forbid = [self.location_to_move(loc) for loc in forbid]
-                    self.black_availables = list(set(self.availables) - set(forbid))
-                    self.change = False
-                else:
-                    self.black_availables = self.availables
-            return self.black_availables
-        if self.order == 1:
+        if self.renju:
+            if self.order == 0:
+                if self.change == True:
+                    if len(self.states) > 1:
+                        square_state = np.zeros((self.width, self.height))
+                        moves, players = np.array(list(zip(*self.states.items())))
+                        move_curr = moves[players == self.current_player]
+                        move_oppo = moves[players != self.current_player]
+                        square_state[move_curr // self.width,
+                                        move_curr % self.height] = 1
+                        square_state[move_oppo // self.width,
+                                        move_oppo % self.height] = 2
+                        rule = Renju_Rule(square_state, self.width)
+                        forbid = rule.get_forbidden_points(1)
+                        forbid = [self.location_to_move(loc) for loc in forbid]
+                        self.black_availables = list(set(self.availables) - set(forbid))
+                        self.change = False
+                    else:
+                        self.black_availables = self.availables
+                return self.black_availables
+            if self.order == 1:
+                return self.availables
+        else:
             return self.availables
 
 
