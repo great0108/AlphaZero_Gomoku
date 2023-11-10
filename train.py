@@ -24,25 +24,25 @@ from policy_value_net_pytorch import PolicyValueNet  # Pytorch
 class TrainPipeline():
     def __init__(self, init_model=None, base_model=None):
         # params of the board and the game
-        self.board_width = 9
-        self.board_height = 9
+        self.board_width = 11
+        self.board_height = 11
         self.n_in_row = 5
         self.board = Board(width=self.board_width,
                            height=self.board_height,
                            n_in_row=self.n_in_row)
         self.game = Game(self.board)
         # training params
-        self.learn_rate = 2e-4
+        self.learn_rate = 2e-3
         self.lr_multiplier = 1.0  # adaptively adjust the learning rate based on KL
         self.temp = 1.0  # the temperature param
         self.n_playout = 400  # num of simulations for each move
         self.c_puct = 5
-        self.buffer_size = 15000
+        self.buffer_size = 10000
         self.batch_size = 1024  # mini-batch size for training
         self.data_buffer = deque(maxlen=self.buffer_size)
         self.play_batch_size = 1
         self.epochs = 5  # num of train_steps for each update
-        self.kl_targ = 0.005
+        self.kl_targ = 0.01
         self.check_freq = 100
         self.game_batch_num = 2000
         self.best_win_ratio = 0.0
@@ -52,7 +52,7 @@ class TrainPipeline():
         self.use_gpu = False
         # num of simulations used for the pure mcts, which is used as
         # the opponent to evaluate the trained policy
-        self.pure_mcts_playout_num = 1000
+        self.pure_mcts_playout_num = 10
         self.base_net = None
 
         if init_model:
@@ -220,7 +220,7 @@ class TrainPipeline():
 
 
 if __name__ == '__main__':
-    training_pipeline = TrainPipeline("./best_policy99.model", "./base_policy99.model")
+    training_pipeline = TrainPipeline()
     training_pipeline.run()
 
     # profiler = Profile()
